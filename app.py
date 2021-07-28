@@ -6,7 +6,7 @@ app = Flask(__name__)
 
 
 @app.route('/', methods=['GET', 'POST'])
-def fragment(): # rock_paper_scissor():
+def fragment(): 
     # Write the GET Method to get the index file
     if request.method == 'GET':
         return render_template('index.html')
