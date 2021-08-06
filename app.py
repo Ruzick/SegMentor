@@ -19,15 +19,17 @@ def fragment():
         # Read file from upload
         file = request.files['file']
         # Get category of prediction
-        category = get_category(img=file)
+        category1 = get_category(img=file, model ='modelDeepLabV3_Mila.tflite')
+        # category2 = get_category(img=file, model ='lite-model_mobilenetv2-coco_dr_1.tflite')
+        # category3 = get_category(img=file, model='lite-model_deeplabv3-xception65_1_default_2.tflite')
         # Plot the category
         # now = datetime.now()
         # current_time = now.strftime("%H-%M-%S")
         # plot_category(file, current_time)
         # Render the result template
         from flask import Response
-        return Response(category.getvalue(), mimetype='image/png') # render_template('result.html', category=category, current_time=current_time)
-
+        return Response( category1.getvalue(), mimetype='image/png')  # mimetype='image/png',  render_template('result.html', category=category, current_time=current_time)
+        # return Response(response = render_template('result.html'), category1.getvalue(), mimetype='image/png') # render_template('result.html', category=category, current_time=current_time)
 
 if __name__ == '__main__':
     # app.run(debug=True)

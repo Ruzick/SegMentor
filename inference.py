@@ -15,18 +15,18 @@ def format_image(image):
     return image #tf.image.resize(image[tf.newaxis, ...], [257, 257]) / 255.0 #[224, 224]) / 255.0  #Got 224 but expected 257 for dimension 1 of input 183.
 
 
-def get_category(img):
+def get_category(img,model):
     """Write a Function to Predict the Class Name
 
     Args:
         img [jpg]: image file
-
+        model[tflite]
     Returns:
         [str]: Prediction
     """
         #Prepare iage further for running inference *******
     path = 'static/model/'
-    tflite_model_file = 'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
+    tflite_model_file = model#'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
 
     # Load TFLite model and allocate tensors.
     with open(path + tflite_model_file, 'rb') as fid:
@@ -77,20 +77,16 @@ def get_category(img):
 
 
     # Invoke the interpreter to run inference.
-
+    # Interpreter interface for TensorFlow Lite Models.
+    interpreter = tf.lite.Interpreter(model_content=tflite_model)
+    interpreter.allocate_tensors()
+      # Sets the value of the input tensor
     interpreter.set_tensor(input_details[0]['index'], image_for_prediction)
+    # Invoke the interpreter.
     interpreter.invoke()
 
     #get values of input sizes **********
     input_size = input_details[0]['shape'][2], input_details[0]['shape'][1]
-
-
-
-
-    # Sets the value of the input tensor
-    interpreter.set_tensor(input_details[0]['index'], image_for_prediction)
-    # Invoke the interpreter.
-    interpreter.invoke()
 
     predictions_array = interpreter.get_tensor(output_index)
     raw_prediction = predictions_array
@@ -166,6 +162,7 @@ def get_category(img):
         plt.imshow(seg_image, alpha=0.7)
         plt.axis('off')
         plt.title('segmentation overlay')
+        
 
         unique_labels = np.unique(seg_map)
         ax = plt.subplot(grid_spec[3])
@@ -200,7 +197,7 @@ def get_category(img):
 
         # #Prediction: (1, 257, 257, 21)
 
-    return vis_segmentation(image, seg_map) #get category function return statement
+    return vis_segmentation(cropped_image, seg_map) #get category function return statement
     #predictions_array.shape #class_names[predicted_label] 
 
 
