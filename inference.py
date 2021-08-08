@@ -27,7 +27,7 @@ def get_category(img,model):
         #Prepare iage further for running inference *******
     path = 'static/model/'
     tflite_model_file = model#'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
-    model= model
+    # model= model
     # Load TFLite model and allocate tensors.
     with open(path + tflite_model_file, 'rb') as fid:
         tflite_model = fid.read()
@@ -176,9 +176,9 @@ def get_category(img,model):
         # plt.show()
         fig = plt.gcf()
         fig.savefig(f'static/images/pic_{model}.png')
-        import io
-        from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-        output = io.BytesIO()
+        # import io
+        # from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+        # output = io.BytesIO()
         # # FigureCanvas(fig).print_png(output)
         # FigureCanvas(fig).print_png(output)
         # return output
