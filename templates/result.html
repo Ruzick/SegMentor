@@ -3,7 +3,7 @@
 
 
 <head>
-    <title>Rock Paper Scissor App</title>
+    <title>results</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
         body {
@@ -35,12 +35,27 @@
 <body>
     <div class="hero-image">
         <div class="hero-text">
-            <h2 style="color:white;font-size:40px;">Prediction: {{ cat1 }}</h2>
+            <!-- <h2 style="color:white;font-size:40px;">Prediction: {{ cat1 }}</h2>
             <h2 style="color:white;font-size:40px;">Prediction: {{ cat2 }}</h2>
-            <h2 style="color:white;font-size:40px;">Prediction: {{ cat3 }}</h2>
-            
+            <h2 style="color:white;font-size:40px;">Prediction: {{ cat3 }}</h2> -->
 
-            <img src='static/images/output_{{ current_time }}.png' alt="Input Image" width="250" height="250">
+
+            <!-- <img src='static/images/input.png' alt="Input Image" width="250" height="250"> -->
+            <p>Model 1 , DeeplabV3{{model1}}</p>
+            <img src='static/images/pic_modelDeepLabV3_Mila.tflite.png' alt="Input Image" width="1000" height="350">
+        </div>
+    </div>
+    <div class="hero-image">
+        <div class="hero-text">
+            <p>Model 2 , {{model2}}</p>
+            <img src='static/images/pic_lite-model_mobilenetv2-coco_dr_1.tflite.png' alt="Input Image" width="1000" height="350">
+     </div>
+        </div>
+
+    <div class="hero-image">
+        <div class="hero-text">
+            <p>Model 3 , {{model3}}</p>
+            <img src='static/images/pic_lite-model_deeplabv3-xception65_1_default_2.tflite.png' alt="Input Image" width="1000" height="350">
         </div>
     </div>
 

@@ -27,7 +27,7 @@ def get_category(img,model):
         #Prepare iage further for running inference *******
     path = 'static/model/'
     tflite_model_file = model#'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
-
+    model= model
     # Load TFLite model and allocate tensors.
     with open(path + tflite_model_file, 'rb') as fid:
         tflite_model = fid.read()
@@ -141,7 +141,7 @@ def get_category(img,model):
 
         return colormap[label]
 
-    def vis_segmentation(image, seg_map):
+    def vis_segmentation(image, seg_map,model):
   #"""Visualizes input image, segmentation map and overlay view."""
         plt.figure(figsize=(15, 5))
         grid_spec = gridspec.GridSpec(1, 4, width_ratios=[6, 6, 6, 1])
@@ -175,13 +175,14 @@ def get_category(img,model):
         plt.grid('off')
         # plt.show()
         fig = plt.gcf()
+        fig.savefig(f'static/images/pic_{model}.png')
         import io
         from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
         output = io.BytesIO()
-        FigureCanvas(fig).print_png(output)
-        return output
+        # # FigureCanvas(fig).print_png(output)
+        # FigureCanvas(fig).print_png(output)
+        # return output
         #End of Vis_seg function
-
 
     LABEL_NAMES = np.asarray([
         'background', 'aeroplane', 'bicycle', 'bird', 'boat', 'bottle', 'bus',
@@ -196,23 +197,41 @@ def get_category(img,model):
         # class_names = ['rock', 'paper', 'scissors']
 
         # #Prediction: (1, 257, 257, 21)
-
-    return vis_segmentation(cropped_image, seg_map) #get category function return statement
+    
+    im_output = vis_segmentation(cropped_image, seg_map, model) 
+    # plot_category(im_output , f'pic_{model}')
+    return im_output #get category function return statement
     #predictions_array.shape #class_names[predicted_label] 
 
-
-def plot_category(img, current_time):
+def plot_category(img, img_name):
     """Plot the input image
-
     Args:
         img [jpg]: image file
     """
     read_img = mpimg.imread(img)
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(ROOT_DIR + f'/static/images/output_{current_time}.png')
+    file_path = os.path.join(ROOT_DIR + f'/static/images/{img_name}.png')
     print(file_path)
 
     if os.path.exists(file_path):
         os.remove(file_path)
 
     plt.imsave(file_path, read_img)
+
+# def save_input(imgl):
+#     """Saves the input image
+
+#     Args:
+#         img [jpg]: image file
+
+#     """
+#     read_img = mpimg.imread(imgl)
+#     format_img= format_image(read_img)
+#     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+#     file_path = os.path.join(ROOT_DIR + f'/static/images/input.jpg') #output_{model}.png')
+#     print(file_path)
+
+#     if os.path.exists(file_path):
+#         os.remove(file_path)
+
+#     plt.imsave(file_path, format_img)
