@@ -26,7 +26,9 @@ def get_category(img,model):
         [str]: Prediction
     """
         #Prepare iage further for running inference *******
-    path = 'static/model/'
+    ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(ROOT_DIR + '/static/model/')
+    # path = 'static/model/' 
     tflite_model_file = model#'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
     # model= model
     # Load TFLite model and allocate tensors.
