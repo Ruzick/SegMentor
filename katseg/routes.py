@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 from flask import current_app as app
-from inference import get_category,save_image
+from .inference import get_category,save_image
 from werkzeug.utils import secure_filename
 import os
 # app = Flask(__name__)
