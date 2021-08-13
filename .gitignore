@@ -1,5 +1,4 @@
 sandbox/
-app1.py
 config.js
 config.py
 # Byte-compiled / optimized / DLL files
@@ -116,3 +115,8 @@ dmypy.json
 .pytype/
 # Cython debug symbols
 cython_debug/
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml
