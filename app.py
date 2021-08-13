@@ -20,9 +20,9 @@ def fragment():
             return
         # Read file from upload
         file = request.files['file']
-        now = datetime.now()
-        current_time = now.strftime("%H-%M-%S")
-        plot_category(file,"input")
+        # now = datetime.now()
+        # current_time = now.strftime("%H-%M-%S")
+        # plot_category(file,"input")
         # Render the result template
         # Get category of prediction
         model1 = 'modelDeepLabV3_Mila.tflite'
