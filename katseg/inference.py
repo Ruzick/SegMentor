@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
 from PIL import Image
+from PIL import ImageOps
 
 def read_image(image):
     return mpimg.imread(image)
@@ -57,7 +58,7 @@ def get_category(img,model):
         new_size = (old_size[0], int(old_size[0] / desired_ratio))
     else:
         new_size = (int(old_size[1] * desired_ratio), old_size[1])
-    from PIL import ImageOps
+
 
     # Cropping the original image to the desired aspect ratio
     delta_w = new_size[0] - old_size[0]
