@@ -177,8 +177,12 @@ def get_category(img,model):
         ax.tick_params(width=0.0)
         plt.grid('off')
         # plt.show()
+
+  
+        path_pic = os.path.join(ROOT_DIR + '/static/images/')
         fig = plt.gcf()
-        fig.savefig(f'static/images/pic_{model}.png')
+        # fig.savefig(f'static/images/pic_{model}.png')
+        fig.savefig(path_pic+f'pic_{model}.png')
         # import io
         # from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
         # output = io.BytesIO()
