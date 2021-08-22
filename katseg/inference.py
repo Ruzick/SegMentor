@@ -3,34 +3,44 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import os
-from PIL import Image
-from PIL import ImageOps
+from PIL import Image, ImageOps
+from matplotlib import gridspec
+
 
 def read_image(image):
+    """
+    reads image and transfomrs it into numpy array 
+    Arguments:
+    imgage [jpg]: image file
+    Results 
+    [numpy array] of dimensions (m,n,3) for color (m,n)for gray
+    """
     return mpimg.imread(image)
     
-
-
 def format_image(image):
+    """
+    converts array to a Pillow image
+    Arguments:
+    image [np array] : dimensions (m,n,3) for color, (m,n) grayscale
+    Results
+    Pillow image object
+    """
     image = Image.fromarray(image)
-    return image #tf.image.resize(image[tf.newaxis, ...], [257, 257]) / 255.0 #[224, 224]) / 255.0  #Got 224 but expected 257 for dimension 1 of input 183.
-
+    return image 
 
 def get_category(img,model):
     """Write a Function to Predict the Class Name
-
     Args:
         img [jpg]: image file
         model[tflite]
     Returns:
         [str]: Prediction
     """
-        #Prepare iage further for running inference *******
+    #Prepare iage further for running inference *******
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
     path = os.path.join(ROOT_DIR + '/static/model/')
-    # path = 'static/model/' 
-    tflite_model_file = model#'modelDeepLabV3_Mila.tflite'#'lite-model_deeplabv3_1_metadata_2.tflite'#'converted_model.tflite'
-    # model= model
+
+    tflite_model_file = model
     # Load TFLite model and allocate tensors.
     with open(path + tflite_model_file, 'rb') as fid:
         tflite_model = fid.read()
@@ -38,25 +48,24 @@ def get_category(img,model):
     # Interpreter interface for TensorFlow Lite Models.
     interpreter = tf.lite.Interpreter(model_content=tflite_model)
 
-    # model=model
     # Gets model input and output details.
     input_index = interpreter.get_input_details()[0]["index"]
     input_details = interpreter.get_input_details()
     output_index = interpreter.get_output_details()[0]["index"]
     interpreter.allocate_tensors()
-
+    #read image and make it into pillow object
     input_img = read_image(img)
     image = format_image(input_img)
-    from PIL import ImageOps
 
-    # Get image size - converting from BHWC to WH
+    # Get image size - Getting the (width, height) the model needs from the input image -converting from BHWC to WH
     input_size = input_details[0]['shape'][2], input_details[0]['shape'][1]
-
     old_size = image.size  # old_size is in (width, height) format
     desired_ratio = input_size[0] / input_size[1]
     old_ratio = old_size[0] / old_size[1]
 
     if old_ratio < desired_ratio: # '<': cropping, '>': padding
+    #if the ratio of the downloaded image is less than the one of the ideal input, then the width of the downloaded is too high
+    #change size to match desired ratio
         new_size = (old_size[0], int(old_size[0] / desired_ratio))
     else:
         new_size = (int(old_size[1] * desired_ratio), old_size[1])
@@ -75,9 +84,6 @@ def get_category(img,model):
     image_for_prediction = np.asarray(resized_image).astype(np.float32)
     image_for_prediction = np.expand_dims(image_for_prediction, 0)
     image_for_prediction = image_for_prediction / 127.5 - 1
-    
-
-
 
     # Invoke the interpreter to run inference.
     # Interpreter interface for TensorFlow Lite Models.
@@ -90,7 +96,6 @@ def get_category(img,model):
 
     #get values of input sizes **********
     input_size = input_details[0]['shape'][2], input_details[0]['shape'][1]
-
     predictions_array = interpreter.get_tensor(output_index)
     raw_prediction = predictions_array
     # Post-processing: convert raw output to segmentation output
@@ -103,10 +108,6 @@ def get_category(img,model):
     seg_map = tf.squeeze(seg_map).numpy().astype(np.int8)
 
     
-    
-    from matplotlib import gridspec
-    from matplotlib import pyplot as plt
-
     def create_pascal_label_colormap():
     #"""Creates a label colormap used in PASCAL VOC segmentation benchmark. Returns:A Colormap for visualizing segmentation results."""
         colormap = np.zeros((257, 3), dtype=int)#np.zeros((256, 3), dtype=int)
@@ -121,20 +122,20 @@ def get_category(img,model):
 
 
     def label_to_color_image(label):
-    # """Adds color defined by the dataset colormap to the label.
+        """Adds color defined by the dataset colormap to the label.
 
-    # Args:
-    #     label: A 2D array with integer type, storing the segmentation label.
+        Args:
+        label: A 2D array with integer type, storing the segmentation label.
 
-    # Returns:
-    #     result: A 2D array with floating type. The element of the array
-    #     is the color indexed by the corresponding element in the input label
-    #     to the PASCAL color map.
+        Returns:
+            result: A 2D array with floating type. The element of the array
+            is the color indexed by the corresponding element in the input label
+            to the PASCAL color map.
 
-    # Raises:
-    #     ValueError: If label is not of rank 2 or its value is larger than color
-    #     map maximum entry.
-    # """
+        Raises:
+            ValueError: If label is not of rank 2 or its value is larger than color
+            map maximum entry.
+        """
         if label.ndim != 2:
             raise ValueError('Expect 2-D input label')
 
@@ -145,7 +146,15 @@ def get_category(img,model):
         return colormap[label]
 
     def vis_segmentation(image, seg_map,model):
-  #"""Visualizes input image, segmentation map and overlay view."""
+        """
+        Visualizes input image, segmentation map and overlay view
+        Arguments:
+        image [Pil image] : (m,n)
+        seg_map [np_array] (m,n)
+        model [tflite]: file
+        Results
+        An image[png] saved on path 'static/images/'
+        """
         plt.figure(figsize=(15, 5))
         grid_spec = gridspec.GridSpec(1, 4, width_ratios=[6, 6, 6, 1])
 
@@ -200,20 +209,19 @@ def get_category(img,model):
     FULL_LABEL_MAP = np.arange(len(LABEL_NAMES)).reshape(len(LABEL_NAMES), 1)
     FULL_COLOR_MAP = label_to_color_image(FULL_LABEL_MAP)
         # predicted_label = np.argmax(predictions_array)
-
-        # class_names = ['rock', 'paper', 'scissors']
-
         # #Prediction: (1, 257, 257, 21)
     
     im_output = vis_segmentation(cropped_image, seg_map, model=model) 
-    # plot_category(im_output , f'pic_{model}')
-    return im_output #get category function return statement
-    #predictions_array.shape #class_names[predicted_label] 
+
+    return im_output 
 
 def save_image(img, img_name):
-    """Plot the input image
+    """Saves input image
     Args:
         img [jpg]: image file
+        img_name[string]: name for the file
+    Results:
+        [png] saves image to /static/images/
     """
     read_img = mpimg.imread(img)
     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -225,20 +233,3 @@ def save_image(img, img_name):
 
     plt.imsave(file_path, read_img)
 
-# def save_input(imgl):
-#     """Saves the input image
-
-#     Args:
-#         img [jpg]: image file
-
-#     """
-#     read_img = mpimg.imread(imgl)
-#     format_img= format_image(read_img)
-#     ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-#     file_path = os.path.join(ROOT_DIR + f'/static/images/input.jpg') #output_{model}.png')
-#     print(file_path)
-
-#     if os.path.exists(file_path):
-#         os.remove(file_path)
-
-#     plt.imsave(file_path, format_img)
